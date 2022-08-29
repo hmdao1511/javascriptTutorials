@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To Do List</title>
+    <style>
+        main {
+            max-width: 700px;
+            margin: auto;
+        }
+
+        .center-all {
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 4em;
+        }
+
+        #name-form input {
+            margin-right: 30px;
+        }
+
+        #name-form input,
+        #name-form button {
+            font-size: 2em;
+        }
+
+        .list-tasks {
+            font-size: 2em;
+        }
+
+        .list-tasks div {
+            text-align: left;
+            word-break: break-all;
+        }
+
+        .new-btn button {
+            font-size: 2em;
+        }
+
+        .new-btn button:nth-child(1) {
+            margin-right: 30px;
+        }
+
+        input[type=checkbox] {
+            transform: scale(2);
+            margin-right: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <div class="center-all">
+            <h1>To-Do List</h1>
+
+            <form action="/hello" id="name-form">
+                <input type="text" id="inp" placeholder="Enter a task...">
+                <button type="submit">Submit</button>
+            </form>
+
+            <h1 id="task-counter">Tasks remaining: 0</h1>
+
+            <div class="new-btn"></div> <br>
+
+            <div class="list-tasks">
+                <i>Currently as free as a bird...</i>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Initialising the variables from HTML tags
+        const theForm = document.querySelector('#name-form');
+        const userInput = document.querySelector('#inp');
+        // Initialising taskCounter with "let" so that we can recalculate it later on
+        let taskCounter = document.querySelector('.list-tasks').childElementCount;
+        const removeButton = document.createElement('button');
+        removeButton.innerText = 'Remove Tasks';
+        const removeAll = document.createElement('button');
+        removeAll.innerText = 'Remove All Tasks';
+        const taskList = document.querySelector('.list-tasks');
+        // We only need to add the Remove button once, and counter prevents 
+        // the program from creating multiple 'Remove' buttons
+        let counter = 0;
+
+        // Event for the 'Remove' button. It removes all ticked elements in the
+        // 'Tasks remaining' list in the HTML
+        removeButton.addEventListener('click', function () {
+            // Selecting all divs containing the user's tasks and put it into 
+            // an array (NodeList)
+            const allTasks = document.querySelectorAll('.the-task');
+
+            // forEach invokes the function for each element in the array 
+            allTasks.forEach(function (element) {
+                // If checked, remove it. Else, you don't.
+                if (element.querySelector('input').checked) {
+                    element.remove();
+                }
+            });
+
+            // Recalculating the total tasks remaining
+            taskCounter = document.querySelector('.list-tasks').childElementCount;
+            document.querySelector('#task-counter').innerText = `Tasks remaining: ${taskCounter}`;
+
+            if (document.querySelector('.list-tasks').childElementCount === 0) {
+                const allButtons = document.querySelector('.new-btn').querySelectorAll('button');
+                allButtons.forEach(function (element) {
+                    element.remove();
+                });
+                const italicAlert = document.createElement('i');
+                italicAlert.innerText = 'Currently as free as a bird...';
+                document.querySelector('.list-tasks').appendChild(italicAlert);
+                document.querySelector('#task-counter').innerText = 'Tasks remaining: 0';
+                // Reset the counter 
+                counter = 0;
+            }
+        });
+
+        // Event for the 'Remove' button. It removes all tasks immediately in the
+        // 'Tasks remaining' list in the HTML without ticking 
+        removeAll.addEventListener('click', function () {
+            // Selecting all divs containing the user's tasks and put it into 
+            // an array (NodeList)
+            const allTasks = document.querySelectorAll('.the-task');
+
+            // forEach invokes the function for each element in the array 
+            allTasks.forEach(function (element) {
+                element.remove();
+            });
+
+            if (document.querySelector('.list-tasks').childElementCount === 0) {
+                const allButtons = document.querySelector('.new-btn').querySelectorAll('button');
+                allButtons.forEach(function (element) {
+                    element.remove();
+                });
+                const italicAlert = document.createElement('i');
+                italicAlert.innerText = 'Currently as free as a bird...';
+
+                // Recalculating the total tasks remaining
+                document.querySelector('.list-tasks').appendChild(italicAlert);
+                document.querySelector('#task-counter').innerText = 'Tasks remaining: 0';
+
+                // Reset the counter
+                counter = 0;
+            }
+        });
+
+        // Event for the form, prevented the redirection with e.preventDefault()
+        theForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            // This is for adding the 'Remove' button once. It'll be added to 
+            // the HTML as soon as a task is added to the list by filling out the form
+            if (userInput.value != '') {
+                if (counter === 0) {
+                    // Get rid of the "no-tasks" status
+                    document.querySelector('.list-tasks').querySelector('i').remove();
+                    document.querySelector('.new-btn').appendChild(removeButton);
+                    document.querySelector('.new-btn').appendChild(removeAll);
+                    counter++;
+                }
+                // Creating a div containing the checkbox and the label for each
+                // entry
+                const divWrap = document.createElement('div');
+                divWrap.classList.add('the-task');
+                const task = userInput.value;
+                const newCheckbox = document.createElement('input');
+                newCheckbox.type = 'checkbox';
+                const newLabel = document.createElement('label');
+                newLabel.innerText = task;
+                divWrap.appendChild(newCheckbox);
+                divWrap.appendChild(newLabel);
+                taskList.appendChild(divWrap);
+                userInput.value = '';
+
+                // Recalculating the total tasks remaining
+                taskCounter = document.querySelector('.list-tasks').childElementCount;
+                document.querySelector('#task-counter').innerText = `Tasks remaining: ${taskCounter}`;
+            }
+        });
+    </script>
+</body>
+
+</html>
